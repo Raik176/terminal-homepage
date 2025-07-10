@@ -1,0 +1,9 @@
+.command-span {
+    color: #dc45dc;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.command-span:hover {
+    color: lightgreen;
+}
