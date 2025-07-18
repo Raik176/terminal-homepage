@@ -14,12 +14,17 @@ export default function Error404() {
     });
 
     return (
-        <div
-            class="bg-black text-green-400 font-mono p-8 w-full h-screen overflow-y-auto max-h-[100vh] whitespace-pre-wrap"
-            style={{ "font-family": "'Roboto Mono', monospace" }}
+        <main
+            className="font-mono p-8 w-full h-screen overflow-y-auto max-h-[100vh] whitespace-pre-wrap"
+            style={{
+                "background-color": "var(--background)",
+                "color": "var(--text-color)",
+                "font-family": "'Roboto Mono', monospace"
+            }}
         >
+            <h1 class="sr-only">Error 404: Page Not Found</h1>
             <div class="w-full max-w-3xl">
-                <pre class="text-green-400">
+                <pre aria-hidden="true" style={{color: "var(--green)"}}>
                     {`
    _____  _______      _____                            __      _____                        .___
   /  |  | \\   _  \\    /  |  |              ____   _____/  |_  _/ ____\\____  __ __  ____    __| _/
@@ -30,13 +35,14 @@ export default function Error404() {
                     `}
                 </pre>
                 <div class="mt-4">
-                    <p class="text-green-400">
-                        <span class="text-red-500">Error 404:</span> Page not found
+                    <p>
+                        <span style={{color: "var(--red)"}}>Error 404:</span> Page not found
                     </p>
-                    <p class="text-green-400 mt-2">
-                        Oops! Looks like you took a wrong turn. The page you were looking for doesn't exist. Here's what you can do:
+                    <p class="mt-2">
+                        Oops! Looks like you took a wrong turn. The page you were looking for doesn't exist. Here's what
+                        you can do:
                     </p>
-                    <ul class="list-disc list-inside text-green-400 mt-2">
+                    <ul class="list-disc list-inside mt-2">
                         <li>
                             Head back to the{" "}
                             <a href="/" class="text-blue-400 underline hover:text-blue-300">
@@ -48,11 +54,11 @@ export default function Error404() {
                     </ul>
                 </div>
                 <div class="mt-6">
-                    <p class="text-green-400">
-                        <span class="text-yellow-400">$</span> Press any key to continue...
+                    <p>
+                        <span style={{color: "var(--yellow)"}}>$</span> Press any key to continue...
                     </p>
                 </div>
             </div>
-        </div>
+        </main>
     );
 }
