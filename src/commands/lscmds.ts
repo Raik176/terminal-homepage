@@ -1,28 +1,29 @@
-import {Terminal} from "../components/Terminal";
-import type {DeriveArgs} from "./index";
+import { Terminal } from "../components/Terminal";
+import type { DeriveArgs } from "./index";
 
 export const meta = {
-    description: "list all available commands",
-    arguments: []
+	description: "list all available commands",
+	arguments: [],
 } as const;
 
 export const handler = (
-    terminal: Terminal,
-    args: DeriveArgs<typeof meta.arguments>,
-    signal: AbortSignal,
-    allCommands: { [key: string]: any }
+	terminal: Terminal,
+	args: DeriveArgs<typeof meta.arguments>,
+	signal: AbortSignal,
+	allCommands: { [key: string]: any }
 ) => {
-    const commandList = Object.keys(allCommands);
-    let output = "";
-    const columns = 10;
+	const commandList = Object.keys(allCommands);
+	let output = "";
+	const columns = 10;
 
-    for (let i = 0; i < commandList.length; i += columns) {
-        const row = commandList.slice(i, i + columns);
-        output += "  " + row.map(cmd => (`[[cmd:${cmd}]]  `)).join("") + "\n";
-    }
+	for (let i = 0; i < commandList.length; i += columns) {
+		const row = commandList.slice(i, i + columns);
+		output += "  " + row.map((cmd) => `[[cmd:${cmd}]]  `).join("") + "\n";
+	}
 
-    output += `\n  - in total, ${commandList.length} commands have been implemented\n`;
-    output += "  - use `[[cmd:man]] <cmd>` to get more information about a command\n";
+	output += `\n  - in total, ${commandList.length} commands have been implemented\n`;
+	output +=
+		"  - use `[[cmd:man]] <cmd>` to get more information about a command\n";
 
-    terminal.println(output);
+	terminal.println(output);
 };

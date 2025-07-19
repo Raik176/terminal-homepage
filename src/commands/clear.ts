@@ -1,9 +1,9 @@
-import {Terminal} from "../components/Terminal";
+import { Terminal } from "../components/Terminal";
 
 export const meta = {
-    description: "clears the terminal",
+	description: "clears the terminal",
 };
 
 export const handler = (terminal: Terminal) => {
-    terminal.clear();
+	terminal.clear();
 };

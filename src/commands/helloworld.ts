@@ -1,13 +1,13 @@
 import { getDate } from "../utils";
-import {Terminal} from "../components/Terminal";
+import { Terminal } from "../components/Terminal";
 
 function generateRandomIPv4() {
-    const randomByte = () => Math.floor(Math.random() * 256);
-    return `${randomByte()}.${randomByte()}.${randomByte()}.${randomByte()}`;
+	const randomByte = () => Math.floor(Math.random() * 256);
+	return `${randomByte()}.${randomByte()}.${randomByte()}.${randomByte()}`;
 }
 
 function getMotd() {
-    return `Welcome to my website.
+	return `Welcome to my website.
       
   System information as of ${getDate()}
 
@@ -17,14 +17,14 @@ function getMotd() {
    Users logged in:       0
    IPv4 address for eno1: ${generateRandomIPv4()}
   
-Last login: ${localStorage.getItem('lastLogin') || 'Never'}
+Last login: ${localStorage.getItem("lastLogin") || "Never"}
 For a list of available commands, type "[[cmd:help]]".`;
 }
 
 export const meta = {
-    description: "prints the motd (message of the day)",
+	description: "prints the motd (message of the day)",
 } as const;
 
 export const handler = (terminal: Terminal) => {
-    terminal.println(getMotd());
+	terminal.println(getMotd());
 };
