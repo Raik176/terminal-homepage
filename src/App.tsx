@@ -1,4 +1,10 @@
-import { createSignal, createEffect, onMount, type Component } from "solid-js";
+import {
+	createSignal,
+	createEffect,
+	onMount,
+	type Component,
+	For,
+} from "solid-js";
 import { Router, Route } from "@solidjs/router";
 import { Footer } from "./components/Footer";
 import { routes } from "./routes";
@@ -51,13 +57,14 @@ const App: Component = () => {
 
 	return (
 		<Router>
-			{routes.map((route) => (
-				<Route
-					path={route.path}
-					component={Wrapper(route.component, route.title)}
-					key={route.path}
-				/>
-			))}
+			<For each={routes}>
+				{(route) => (
+					<Route
+						path={route.path}
+						component={Wrapper(route.component, route.title)}
+					/>
+				)}
+			</For>
 		</Router>
 	);
 };

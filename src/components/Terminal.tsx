@@ -14,17 +14,17 @@ import {
 	argumentTypes,
 	commandsPromise,
 	getCommandList,
-	getCommandHandler, ArgumentDefinition,
+	getCommandHandler,
+	ArgumentDefinition,
 } from "../commands";
 import { ANSI_COLORS, ArgumentError, getDate, InterruptError } from "../utils";
 import { defaultTheme } from "../themes";
 
-type OutputItem = string | { html: JSX.Element };
+type OutputItem = string | { html: JSX.Element } | (() => JSX.Element);
 
 interface AnsiSegment {
 	text: string;
-	color: string;
-	bgColor: string;
+	style: JSX.CSSProperties;
 }
 
 const user = "root";
@@ -41,18 +41,16 @@ export class Terminal {
 
 	constructor(
 		setHistory: Setter<OutputItem[]>,
-		promptSignal: [Accessor<string>, Setter<string>],
-		commandHistoryStore: [Store<string[]>, SetStoreFunction<string[]>]
+		getPrompt: Accessor<string>,
+		setPrompt: Setter<string>,
+		commandHistory: Store<string[]>,
+		setCommandHistory: SetStoreFunction<string[]>
 	) {
 		this.setHistory = setHistory;
-
-		const [getPrompt, setPrompt] = promptSignal;
 		this.setPromptMessage = setPrompt;
 		this.getPrompt = getPrompt;
-
-		const [history, setCommandHistory] = commandHistoryStore;
 		this.setCommandHistory = setCommandHistory;
-		this.commandHistory = history;
+		this.commandHistory = commandHistory;
 	}
 
 	public print(output: OutputItem): void {
@@ -124,7 +122,6 @@ export class Terminal {
 				try {
 					const input = await this.prompt(promptMessage, signal);
 					if (input === null) {
-						// User cancelled via Ctrl+C
 						reject(new InterruptError("Input cancelled by user."));
 						break;
 					}
@@ -169,10 +166,14 @@ const TerminalComponent: Component = () => {
 		createSignal<AbortController | null>(null);
 	const [isAutoScrollActive, setIsAutoScrollActive] = createSignal(true);
 
+	const [getPrompt, setPrompt] = createSignal(shellPrompt);
+	const [commandHistory, setCommandHistory] = createStore<string[]>([]);
 	const terminal = new Terminal(
 		setHistory,
-		createSignal(shellPrompt),
-		createStore<string[]>([])
+		getPrompt,
+		setPrompt,
+		commandHistory,
+		setCommandHistory
 	);
 
 	const handleScroll = () => {
@@ -590,16 +591,14 @@ const TerminalComponent: Component = () => {
 	const parseAnsi = (text: string): AnsiSegment[] => {
 		const segments: AnsiSegment[] = [];
 		let currentText = "";
-		let currentColor = "";
-		let currentBgColor = "";
+		let currentStyle: JSX.CSSProperties = {};
 
 		for (let i = 0; i < text.length; i++) {
 			if (text[i] === "\x1b" && text[i + 1] === "[") {
 				if (currentText) {
 					segments.push({
 						text: currentText,
-						color: currentColor,
-						bgColor: currentBgColor,
+						style: { ...currentStyle },
 					});
 					currentText = "";
 				}
@@ -614,20 +613,23 @@ const TerminalComponent: Component = () => {
 				const codeParts = code.split(";");
 
 				if (codeParts[0] === "0" || code === "") {
-					currentColor = "";
-					currentBgColor = "";
+					currentStyle = {};
 				} else {
 					for (let j = 0; j < codeParts.length; j++) {
 						const part = codeParts[j];
 						const num = parseInt(part);
 						if (num >= 30 && num <= 37) {
-							currentColor = `color: ${getColor(num)};`;
+							currentStyle.color = getColor(num);
 						} else if (num >= 40 && num <= 47) {
-							currentBgColor = `background-color: ${getColor(num - 10)};`;
+							currentStyle["background-color"] = getColor(
+								num - 10
+							);
 						} else if (num >= 90 && num <= 97) {
-							currentColor = `color: ${getBrightColor(num)};`;
+							currentStyle.color = getBrightColor(num);
 						} else if (num >= 100 && num <= 107) {
-							currentBgColor = `background-color: ${getBrightColor(num - 10)};`;
+							currentStyle["background-color"] = getBrightColor(
+								num - 10
+							);
 						} else if (num === 38 || num === 48) {
 							const isBg = num === 48;
 							const type = parseInt(codeParts[j + 1]);
@@ -635,8 +637,8 @@ const TerminalComponent: Component = () => {
 								const colorIndex = parseInt(codeParts[j + 2]);
 								const color = get256Color(colorIndex);
 								if (isBg)
-									currentBgColor = `background-color: ${color};`;
-								else currentColor = `color: ${color};`;
+									currentStyle["background-color"] = color;
+								else currentStyle.color = color;
 								j += 2;
 							} else if (type === 2) {
 								const r = parseInt(codeParts[j + 2]);
@@ -644,8 +646,8 @@ const TerminalComponent: Component = () => {
 								const b = parseInt(codeParts[j + 4]);
 								const rgbColor = `rgb(${r}, ${g}, ${b})`;
 								if (isBg)
-									currentBgColor = `background-color: ${rgbColor};`;
-								else currentColor = `color: ${rgbColor};`;
+									currentStyle["background-color"] = rgbColor;
+								else currentStyle.color = rgbColor;
 								j += 4;
 							}
 						}
@@ -659,8 +661,7 @@ const TerminalComponent: Component = () => {
 		if (currentText) {
 			segments.push({
 				text: currentText,
-				color: currentColor,
-				bgColor: currentBgColor,
+				style: { ...currentStyle },
 			});
 		}
 		return segments;
@@ -711,18 +712,12 @@ const TerminalComponent: Component = () => {
 		output: OutputItem | null
 	): JSX.Element | (JSX.Element | string)[] | undefined => {
 		if (output === null) return;
+
+		if (typeof output === "function") {
+			return output();
+		}
+
 		if (typeof output === "object" && output.html) {
-			createEffect(() => {
-				if (terminalElement) {
-					const codeBlocks =
-						terminalElement.querySelectorAll("pre code");
-					codeBlocks.forEach((block) => {
-						if (!block.classList.contains("hljs")) {
-							window.hljs.highlightElement(block);
-						}
-					});
-				}
-			});
 			return output.html;
 		}
 
@@ -731,65 +726,58 @@ const TerminalComponent: Component = () => {
 			? textOutput.slice(0, -1).split("\n")
 			: textOutput.split("\n");
 
-		return lines.map((line, index) => {
-			const segments = line
-				.split(/(\[\[.*?]])/)
-				.map((segment, segIndex) => {
-					if (segment.startsWith("[[") && segment.endsWith("]]")) {
-						const content = segment.slice(2, -2).trim();
+		return lines.map((line) => {
+			const segments = line.split(/(\[\[.*?]])/).map((segment) => {
+				if (segment.startsWith("[[") && segment.endsWith("]]")) {
+					const content = segment.slice(2, -2).trim();
 
-						if (content.startsWith("cmd:")) {
-							const command = content.substring(4);
-							return (
-								<span
-									key={segIndex}
-									class="command-span"
-									onClick={() => {
-										if (terminal.promptResolver) {
-											terminal.promptResolver(command);
-										}
-										setInput("");
-										setSuggestion("");
-									}}
-								>
-									{command}
-								</span>
-							);
-						}
-
-						if (content.startsWith("href:")) {
-							const url = content.substring(5);
-							return (
-								<a
-									key={segIndex}
-									href={url}
-									target="_blank"
-									rel="noopener noreferrer"
-									class="link-span text-blue-400 underline hover:text-blue-300"
-								>
-									{url}
-								</a>
-							);
-						}
+					if (content.startsWith("cmd:")) {
+						const command = content.substring(4);
+						return (
+							<span
+								class="command-span"
+								onClick={() => {
+									if (terminal.promptResolver) {
+										terminal.promptResolver(command);
+									}
+									setInput("");
+									setSuggestion("");
+								}}
+							>
+								{command}
+							</span>
+						);
 					}
 
-					return (
-						<span key={segIndex}>
-							{parseAnsi(segment).map(
-								(ansiSegment, ansiIndex) => (
-									<span
-										key={ansiIndex}
-										style={`${ansiSegment.color} ${ansiSegment.bgColor}`}
-									>
-										{ansiSegment.text}
-									</span>
-								)
-							)}
-						</span>
-					);
-				});
+					if (content.startsWith("href:")) {
+						const url = content.substring(5);
+						return (
+							<a
+								href={url}
+								target="_blank"
+								rel="noopener noreferrer"
+								class="link-span text-blue-400 underline hover:text-blue-300"
+							>
+								{url}
+							</a>
+						);
+					}
+				}
 
-			return <div key={index}>{segments}</div>;
+				return (
+					<span>
+						<For each={parseAnsi(segment)}>
+							{(ansiSegment) => (
+								<span style={ansiSegment.style}>
+									{ansiSegment.text}
+								</span>
+							)}
+						</For>
+					</span>
+				);
+			});
+
+			return <div>{segments}</div>;
 		});
 	};
 
@@ -797,6 +785,8 @@ const TerminalComponent: Component = () => {
 		<div
 			ref={(el) => (terminalWrapperDiv = el)}
 			class="h-screen flex flex-col pb-10"
+			aria-live="polite"
+			aria-atomic="false"
 			style={{
 				"background-color": "var(--background)",
 				color: "var(--text-color)",
@@ -823,17 +813,14 @@ const TerminalComponent: Component = () => {
 					{(!isBusy() || terminal.isPromptActive()) && (
 						<>
 							<div class="flex items-center w-full">
-								<span style="white-space: pre;">
-									{parseAnsi(terminal.getPrompt()).map(
-										(segment, segIndex) => (
-											<span
-												key={segIndex}
-												style={`${segment.color} ${segment.bgColor}`}
-											>
+								<span style={{ "white-space": "pre" }}>
+									<For each={parseAnsi(terminal.getPrompt())}>
+										{(segment) => (
+											<span style={segment.style}>
 												{segment.text}
 											</span>
-										)
-									)}
+										)}
+									</For>
 								</span>
 								<div class="flex-grow relative">
 									<input
@@ -852,7 +839,9 @@ const TerminalComponent: Component = () => {
 									{suggestion() && (
 										<span
 											class="absolute left-0 top-0 text-gray-500 pointer-events-none"
-											style={`padding-left: ${input().length}ch;`}
+											style={{
+												"padding-left": `${input().length}ch`,
+											}}
 										>
 											{suggestion().substring(
 												input().length
@@ -863,16 +852,13 @@ const TerminalComponent: Component = () => {
 							</div>
 							{feedback() && (
 								<div class="text-gray-500 whitespace-pre">
-									{parseAnsi(feedback()).map(
-										(segment, segIndex) => (
-											<span
-												key={segIndex}
-												style={`${segment.color} ${segment.bgColor}`}
-											>
+									<For each={parseAnsi(feedback())}>
+										{(segment) => (
+											<span style={segment.style}>
 												{segment.text}
 											</span>
-										)
-									)}
+										)}
+									</For>
 								</div>
 							)}
 						</>

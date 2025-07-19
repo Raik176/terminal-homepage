@@ -41,7 +41,7 @@ interface PaginatedProjectsViewProps {
 }
 
 const UserProfile: Component<UserProfileProps> = (props) => {
-	const profileUrl = `https://modrinth.com/user/${props.user.username}`;
+	const profileUrl = () => `https://modrinth.com/user/${props.user.username}`;
 	return (
 		<div
 			class="mb-6 p-4 border rounded-lg flex items-center gap-5"
@@ -58,7 +58,7 @@ const UserProfile: Component<UserProfileProps> = (props) => {
 					style={{ color: "var(--green)" }}
 				>
 					<a
-						href={profileUrl}
+						href={profileUrl()}
 						target="_blank"
 						rel="noopener noreferrer"
 						class="hover:underline"
@@ -118,7 +118,8 @@ const UserProfile: Component<UserProfileProps> = (props) => {
 const ModrinthProject: Component<{ project: ModrinthProjectData }> = (
 	props
 ) => {
-	const projectUrl = `https://modrinth.com/${props.project.project_type}/${props.project.slug}`;
+	const projectUrl = () =>
+		`https://modrinth.com/${props.project.project_type}/${props.project.slug}`;
 	return (
 		<div
 			class="my-3 p-4 border rounded-lg flex items-start gap-4"
@@ -134,7 +135,7 @@ const ModrinthProject: Component<{ project: ModrinthProjectData }> = (
 			<div class="flex-grow">
 				<h3 class="font-bold text-xl" style={{ color: "var(--green)" }}>
 					<a
-						href={projectUrl}
+						href={projectUrl()}
 						target="_blank"
 						rel="noopener noreferrer"
 						class="hover:underline"
@@ -329,16 +330,14 @@ export const handler = async (
 			return;
 		}
 
-		terminal.println({
-			html: (
-				<PaginatedProjectsView
-					projects={projects}
-					userProfile={userProfile}
-					projectCount={projectCount}
-					totalDownloads={totalDownloads}
-				/>
-			),
-		});
+		terminal.println(() => (
+			<PaginatedProjectsView
+				projects={projects}
+				userProfile={userProfile}
+				projectCount={projectCount}
+				totalDownloads={totalDownloads}
+			/>
+		));
 	} catch (e: unknown) {
 		if (!signal.aborted) {
 			if (e instanceof Error) {

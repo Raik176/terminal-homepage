@@ -1,35 +1,100 @@
-import { For } from "solid-js";
+import { For, JSX } from "solid-js";
 import type { Component } from "solid-js";
+import { A } from "@solidjs/router";
 
 interface DisclaimerItem {
 	id: number;
-	text: string;
+	content: JSX.Element;
 }
 
+// noinspection HtmlUnknownTarget
 const disclaimerContent: DisclaimerItem[] = [
 	{
 		id: 1,
-		text: `The information provided on this homepage (the "Site") is for general informational purposes only. While I strive to keep the content accurate and up to date, I make no guarantees about the completeness, reliability, or suitability of the information, opinions, or resources shared here. Any reliance you place on such information is <span style="color: var(--yellow)">strictly at your own risk</span>.`,
+		content: (
+			<>
+				The information provided on this homepage (the "Site") is for
+				general informational purposes only. While I strive to keep the
+				content accurate and up to date, I make no guarantees about the
+				completeness, reliability, or suitability of the information,
+				opinions, or resources shared here. Any reliance you place on
+				such information is{" "}
+				<span style={{ color: "var(--yellow)" }}>
+					strictly at your own risk
+				</span>
+				.
+			</>
+		),
 	},
 	{
 		id: 2,
-		text: `This website respects your privacy and <span style="color: var(--green)">does not collect any personal data or use analytics services</span>. For more details, you can view the <a href="/legal/privacy-policy" class="text-blue-400 underline hover:text-blue-300">Privacy Policy</a>.`,
+		content: (
+			<>
+				This website respects your privacy and{" "}
+				<span style={{ color: "var(--green)" }}>
+					does not collect any personal data or use analytics services
+				</span>
+				. For more details, you can view the{" "}
+				<A
+					href="/legal/privacy-policy"
+					class="text-blue-400 underline hover:text-blue-300"
+				>
+					Privacy Policy
+				</A>
+				.
+			</>
+		),
 	},
 	{
 		id: 3,
-		text: `I am <span style="color: var(--red)">not liable</span> for any loss or damage, including but not limited to indirect or consequential loss or damage, arising from the use of this Site or any content provided herein. This includes, but is not limited to, loss of data, profits, or other intangible losses.`,
+		content: (
+			<>
+				I am <span style={{ color: "var(--red)" }}>not liable</span> for
+				any loss or damage, including but not limited to indirect or
+				consequential loss or damage, arising from the use of this Site
+				or any content provided herein. This includes, but is not
+				limited to, loss of data, profits, or other intangible losses.
+			</>
+		),
 	},
 	{
 		id: 4,
-		text: `This Site may include links to external websites that are not under my control. I have no influence over the nature, content, or availability of those sites. The inclusion of any links does not necessarily imply <span style="color: var(--cyan)">endorsement or agreement</span> with the views expressed on those sites.`,
+		content: (
+			<>
+				This Site may include links to external websites that are not
+				under my control. I have no influence over the nature, content,
+				or availability of those sites. The inclusion of any links does
+				not necessarily imply{" "}
+				<span style={{ color: "var(--cyan)" }}>
+					endorsement or agreement
+				</span>{" "}
+				with the views expressed on those sites.
+			</>
+		),
 	},
 	{
 		id: 5,
-		text: `I make every effort to keep this Site accessible and functioning smoothly. However, I am not responsible for any temporary unavailability due to technical issues beyond my control.`,
+		content: (
+			<>
+				I make every effort to keep this Site accessible and functioning
+				smoothly. However, I am not responsible for any temporary
+				unavailability due to technical issues beyond my control.
+			</>
+		),
 	},
 	{
 		id: 6,
-		text: `This website and its contents are governed by the laws of <span style="color: var(--green)">Germany</span>. The place of jurisdiction shall be the competent court in <span style="color: var(--green)">Papenburg, Germany</span>.`,
+		content: (
+			<>
+				This website and its contents are governed by the laws of{" "}
+				<span style={{ color: "var(--green)" }}>Germany</span>. The
+				place of jurisdiction shall be the competent court in{" "}
+				<span style={{ color: "var(--green)" }}>
+					Papenburg, Germany
+				</span>
+				.
+			</>
+		),
 	},
 ];
 
@@ -61,20 +126,18 @@ const Disclaimer: Component = () => {
 			}}
 		>
 			<h1 class="sr-only">Disclaimer</h1>
-
 			<AsciiArt />
-
 			<section class="max-w-2xl mx-auto text-center animate-slide-in-left">
 				<For each={disclaimerContent}>
 					{(item) => (
 						<p
 							class="text-lg leading-relaxed mb-8 text-left px-4 sm:px-0"
 							style={{ color: "var(--text-color)" }}
-							innerHTML={item.text}
-						/>
+						>
+							{item.content}
+						</p>
 					)}
 				</For>
-
 				<p
 					class="text-lg leading-relaxed mb-8 text-left px-4 sm:px-0"
 					style={{ color: "var(--text-color)" }}

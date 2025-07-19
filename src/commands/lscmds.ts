@@ -1,5 +1,5 @@
 import { Terminal } from "../components/Terminal";
-import type {Commands, DeriveArgs} from "./index";
+import type { Commands, DeriveArgs } from "./index";
 
 export const meta = {
 	description: "list all available commands",

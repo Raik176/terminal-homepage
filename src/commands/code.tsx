@@ -1,6 +1,6 @@
 import { createSignal, Show, Component } from "solid-js";
 import { Terminal } from "../components/Terminal";
-import type {Commands, DeriveArgs} from "./index";
+import type { Commands, DeriveArgs } from "./index";
 
 interface CodeBlockProps {
 	codeString: string;
@@ -98,14 +98,12 @@ export const handler = async (
 
 	try {
 		const sourceCode = await commandToDisplay.sourceLoader();
-		terminal.println({
-			html: (
-				<CodeBlock
-					codeString={sourceCode.trim()}
-					commandName={commandName}
-				/>
-			),
-		});
+		terminal.println(() => (
+			<CodeBlock
+				codeString={sourceCode.trim()}
+				commandName={commandName}
+			/>
+		));
 	} catch (e: unknown) {
 		terminal.error(
 			new Error(

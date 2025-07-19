@@ -49,7 +49,7 @@ const ContactCard: Component<{ contact: Contact }> = (props) => {
 					"mask-repeat": "no-repeat",
 					"mask-position": "center",
 				}}
-			></div>
+			/>
 			<div>
 				<h3
 					class="font-bold text-lg"
@@ -164,7 +164,5 @@ const ContactInfoComponent: Component = () => {
 };
 
 export const handler = (terminal: Terminal) => {
-	terminal.println({
-		html: <ContactInfoComponent />,
-	});
+	terminal.println(() => <ContactInfoComponent />);
 };

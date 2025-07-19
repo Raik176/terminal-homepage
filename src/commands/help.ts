@@ -1,5 +1,5 @@
 import { Terminal } from "../components/Terminal";
-import {Commands, DeriveArgs} from "./index";
+import { Commands, DeriveArgs } from "./index";
 
 export const meta = {
 	description: "shows the help menu",

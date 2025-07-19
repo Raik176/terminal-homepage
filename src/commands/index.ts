@@ -50,7 +50,6 @@ export type ArgTypeMap = {
 	>;
 };
 
-// Defines the structure for a single command argument.
 export interface ArgumentDefinition {
 	name: string;
 	shorthand?: string;
@@ -60,37 +59,37 @@ export interface ArgumentDefinition {
 	type:
 		| keyof ArgTypeMap
 		| {
-		typeName?: string;
-		validate: (value: string) => boolean | Promise<boolean>;
-		parse: (val: string) => unknown;
-		suggestions: (
-			currentInput: string
-		) => string[] | Promise<string[]>;
-	};
+				typeName?: string;
+				validate: (value: string) => boolean | Promise<boolean>;
+				parse: (val: string) => unknown;
+				suggestions: (
+					currentInput: string
+				) => string[] | Promise<string[]>;
+		  };
 }
 
 export type DeriveArgs<T> = T extends readonly ArgumentDefinition[]
 	? {
-	[K in T[number] as K["optional"] extends true
-		? K["default"] extends string
-			? K["name"]
-			: never
-		: K["name"]]: K["type"] extends keyof ArgTypeMap
-		? ArgTypeMap[K["type"]]
-		: K["type"] extends { parse: (val: string) => unknown }
-			? ReturnType<K["type"]["parse"]>
-			: unknown;
-} & {
-	[K in T[number] as K["optional"] extends true
-		? K["default"] extends string
-			? never
-			: K["name"]
-		: never]?: K["type"] extends keyof ArgTypeMap
-		? ArgTypeMap[K["type"]]
-		: K["type"] extends { parse: (val: string) => unknown }
-			? ReturnType<K["type"]["parse"]>
-			: unknown;
-}
+			[K in T[number] as K["optional"] extends true
+				? K["default"] extends string
+					? K["name"]
+					: never
+				: K["name"]]: K["type"] extends keyof ArgTypeMap
+				? ArgTypeMap[K["type"]]
+				: K["type"] extends { parse: (val: string) => unknown }
+					? ReturnType<K["type"]["parse"]>
+					: unknown;
+		} & {
+			[K in T[number] as K["optional"] extends true
+				? K["default"] extends string
+					? never
+					: K["name"]
+				: never]?: K["type"] extends keyof ArgTypeMap
+				? ArgTypeMap[K["type"]]
+				: K["type"] extends { parse: (val: string) => unknown }
+					? ReturnType<K["type"]["parse"]>
+					: unknown;
+		}
 	: Record<string, never>;
 
 export interface CommandMeta {

@@ -70,7 +70,9 @@ export const handler = (
 			.map((c) => colorBlock(theme[`--bright-${c}`]))
 			.join("");
 
-		terminal.println(`${themeName.padEnd(8)} ${normalColors}  ${brightColors}`);
+		terminal.println(
+			`${themeName.padEnd(8)} ${normalColors}  ${brightColors}`
+		);
 	}
 
 	terminal.println(`\nCurrent theme: ${terminal.getTheme()}`);
