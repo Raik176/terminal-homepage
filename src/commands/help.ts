@@ -8,20 +8,16 @@ export const meta = {
 
 export const handler = (
 	terminal: Terminal,
-	args: DeriveArgs<typeof meta.arguments>,
-	signal: AbortSignal,
+	_args: DeriveArgs<typeof meta.arguments>,
+	_signal: AbortSignal,
 	allCommands: Commands
 ) => {
-	try {
-		const lscmdsDesc = allCommands.lscmds.description;
-		const manDesc = allCommands.man.description;
+	const lscmdsDesc = allCommands.lscmds.description;
+	const manDesc = allCommands.man.description;
 
-		terminal.println(` Welcome to the help menu!
+	terminal.println(` Welcome to the help menu!
  Here are some commands to try:
 
     [[cmd:lscmds]] ${lscmdsDesc}
     [[cmd:man]]    ${manDesc}`);
-	} catch {
-		terminal.error(new Error("Could not load help information."));
-	}
 };

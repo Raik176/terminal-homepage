@@ -807,9 +807,11 @@ const TerminalComponent: Component = () => {
 						"background-color": "var(--background)",
 					}}
 				>
-					<For each={history}>
-						{(item) => <div>{renderOutput(item)}</div>}
-					</For>
+					<div role="log" aria-live="polite">
+						<For each={history}>
+							{(item) => <div>{renderOutput(item)}</div>}
+						</For>
+					</div>
 					{(!isBusy() || terminal.isPromptActive()) && (
 						<>
 							<div class="flex items-center w-full">
@@ -823,6 +825,9 @@ const TerminalComponent: Component = () => {
 									</For>
 								</span>
 								<div class="flex-grow relative">
+									<label for="prompt" class="sr-only">
+										Terminal Input
+									</label>
 									<input
 										ref={(el) => (inputElement = el)}
 										type="text"

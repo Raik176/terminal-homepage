@@ -15,7 +15,7 @@ export const meta = {
 };
 
 export const handler = (
-	terminal: Terminal,
+	_terminal: Terminal,
 	args: DeriveArgs<typeof meta.arguments>
 ) => {
 	window.open(args.url, "_blank");

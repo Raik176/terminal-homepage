@@ -279,8 +279,7 @@ const PaginatedProjectsView: Component<PaginatedProjectsViewProps> = (
 };
 
 export const meta = {
-	description:
-		"Shows my Modrinth projects with a component-based pagination system.",
+	description: "Shows my Modrinth projects.",
 	arguments: [],
 } as const;
 
@@ -293,58 +292,48 @@ export const handler = async (
 	const userUrl = `https://api.modrinth.com/v2/user/${userId}`;
 	const projectsUrl = `${userUrl}/projects`;
 
-	try {
-		terminal.println("Fetching profile and projects...");
-		const [userResponse, projectsResponse] = await Promise.all([
-			fetch(userUrl, { signal }),
-			fetch(projectsUrl, { signal }),
-		]);
+	terminal.println("Fetching profile and projects...");
+	const [userResponse, projectsResponse] = await Promise.all([
+		fetch(userUrl, { signal }),
+		fetch(projectsUrl, { signal }),
+	]);
 
-		if (signal.aborted) return;
+	if (signal.aborted) return;
 
-		if (!userResponse.ok)
-			throw new Error(
-				`Could not fetch user profile. (Status: ${userResponse.status})`
-			);
-		if (!projectsResponse.ok)
-			throw new Error(
-				`Could not fetch projects. (Status: ${projectsResponse.status})`
-			);
-
-		const userProfile: ModrinthUser = await userResponse.json();
-		const projects: ModrinthProjectData[] = (
-			await projectsResponse.json()
-		).sort(
-			(a: ModrinthProjectData, b: ModrinthProjectData) =>
-				b.downloads - a.downloads
+	if (!userResponse.ok)
+		throw new Error(
+			`Could not fetch user profile. (Status: ${userResponse.status})`
+		);
+	if (!projectsResponse.ok)
+		throw new Error(
+			`Could not fetch projects. (Status: ${projectsResponse.status})`
 		);
 
-		const projectCount = projects.length;
-		const totalDownloads = projects.reduce(
-			(acc, project) => acc + project.downloads,
-			0
-		);
+	const userProfile: ModrinthUser = await userResponse.json();
+	const projects: ModrinthProjectData[] = (
+		await projectsResponse.json()
+	).sort(
+		(a: ModrinthProjectData, b: ModrinthProjectData) =>
+			b.downloads - a.downloads
+	);
 
-		if (projects.length === 0) {
-			terminal.println("No projects found.");
-			return;
-		}
+	const projectCount = projects.length;
+	const totalDownloads = projects.reduce(
+		(acc, project) => acc + project.downloads,
+		0
+	);
 
-		terminal.println(() => (
-			<PaginatedProjectsView
-				projects={projects}
-				userProfile={userProfile}
-				projectCount={projectCount}
-				totalDownloads={totalDownloads}
-			/>
-		));
-	} catch (e: unknown) {
-		if (!signal.aborted) {
-			if (e instanceof Error) {
-				terminal.error(e);
-			} else {
-				terminal.error(new Error(String(e)));
-			}
-		}
+	if (projects.length === 0) {
+		terminal.println("No projects found.");
+		return;
 	}
+
+	terminal.println(() => (
+		<PaginatedProjectsView
+			projects={projects}
+			userProfile={userProfile}
+			projectCount={projectCount}
+			totalDownloads={totalDownloads}
+		/>
+	));
 };

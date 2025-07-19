@@ -101,28 +101,18 @@ export const handler = async (
 	const apiKey = "DEMO_KEY";
 	const url = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}`;
 
-	try {
-		terminal.println("Fetching NASA's Astronomy Picture of the Day...");
-		const response = await fetch(url, { signal });
+	terminal.println("Fetching NASA's Astronomy Picture of the Day...");
+	const response = await fetch(url, { signal });
 
-		if (signal.aborted) return;
+	if (signal.aborted) return;
 
-		if (!response.ok) {
-			throw new Error(
-				`Failed to fetch APOD data (Status: ${response.status})`
-			);
-		}
-
-		const data: ApodData = await response.json();
-
-		terminal.println(() => <ApodComponent data={data} />);
-	} catch (e: unknown) {
-		if (!signal.aborted) {
-			if (e instanceof Error) {
-				terminal.error(e);
-			} else {
-				terminal.error(new Error(String(e)));
-			}
-		}
+	if (!response.ok) {
+		throw new Error(
+			`Failed to fetch APOD data (Status: ${response.status})`
+		);
 	}
+
+	const data: ApodData = await response.json();
+
+	terminal.println(() => <ApodComponent data={data} />);
 };

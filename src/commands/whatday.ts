@@ -57,7 +57,7 @@ export const handler = (
 	};
 	const isPast =
 		new Date(date.toDateString()) < new Date(new Date().toDateString());
-	const output = `the ${day}${daySuffix(day)} of ${monthName} of the year ${date.getFullYear()} ${isPast ? "was" : "will be"} a ${dayOfWeek}`;
+	const output = `The ${day}${daySuffix(day)} of ${monthName} of the year ${date.getFullYear()} ${isPast ? "was" : "will be"} a ${dayOfWeek}.`;
 
 	terminal.println(output);
 };

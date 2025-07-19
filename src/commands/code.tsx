@@ -96,21 +96,8 @@ export const handler = async (
 		return;
 	}
 
-	try {
-		const sourceCode = await commandToDisplay.sourceLoader();
-		terminal.println(() => (
-			<CodeBlock
-				codeString={sourceCode.trim()}
-				commandName={commandName}
-			/>
-		));
-	} catch (e: unknown) {
-		terminal.error(
-			new Error(
-				`Could not get source for command '${commandName}'. Details: ${
-					e instanceof Error ? e.message : String(e)
-				}`
-			)
-		);
-	}
+	const sourceCode = await commandToDisplay.sourceLoader();
+	terminal.println(() => (
+		<CodeBlock codeString={sourceCode.trim()} commandName={commandName} />
+	));
 };

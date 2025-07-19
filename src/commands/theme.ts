@@ -50,6 +50,11 @@ export const handler = (
 	}
 
 	terminal.println("Available themes:");
+
+	const maxThemeNameLength = Math.max(
+		...themeNames.map((name) => name.length)
+	);
+
 	const colorNames = [
 		"black",
 		"red",
@@ -71,7 +76,7 @@ export const handler = (
 			.join("");
 
 		terminal.println(
-			`${themeName.padEnd(8)} ${normalColors}  ${brightColors}`
+			`${themeName.padEnd(maxThemeNameLength + 2)}${normalColors}  ${brightColors}`
 		);
 	}
 

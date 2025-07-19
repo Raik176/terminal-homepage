@@ -26,7 +26,7 @@ export const meta = {
 
 export const handler = async (
 	terminal: Terminal,
-	args: DeriveArgs<typeof meta.arguments>,
+	_args: DeriveArgs<typeof meta.arguments>,
 	signal: AbortSignal
 ) => {
 	const joke = await fetch(

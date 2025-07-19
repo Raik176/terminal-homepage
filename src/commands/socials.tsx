@@ -1,6 +1,57 @@
 import { createSignal, For, Show, Component, JSX } from "solid-js";
 import { Terminal } from "../components/Terminal";
 
+const contacts: Contact[] = [
+	{
+		service: "Discord",
+		username: "rhm176.",
+		icon: "/assets/icons/discord.svg",
+		color: "var(--bright-blue)",
+	},
+	{
+		service: "Steam",
+		username: "raik176",
+		url: "https://steamcommunity.com/profiles/76561198807024982/",
+		icon: "/assets/icons/steam.svg",
+		color: "#66c0f4",
+	},
+	{
+		service: "GitHub",
+		username: "Raik176",
+		url: "https://github.com/Raik176",
+		icon: "/assets/icons/github.svg",
+		color: "var(--bright-white)",
+	},
+	{
+		service: "Email",
+		username: "righthandman176@proton.me",
+		url: "mailto:righthandman176@proton.me",
+		icon: "/assets/icons/email.svg",
+		color: "var(--bright-red)",
+	},
+	{
+		service: "Modrinth",
+		username: "rhm176.",
+		url: "https://modrinth.com/user/rhm176.",
+		icon: "/assets/icons/modrinth.svg",
+		color: "var(--green)",
+	},
+	{
+		service: "Curseforge",
+		username: "rhm176",
+		url: "https://www.curseforge.com/members/rhm176",
+		icon: "/assets/icons/curseforge.svg",
+		color: "#ffa500",
+	},
+	{
+		service: "Bluesky",
+		username: "rhm176.de",
+		url: "https://bsky.app/profile/rhm176.de",
+		icon: "/assets/icons/bsky.svg",
+		color: "var(--blue)",
+	},
+];
+
 interface Contact {
 	service: string;
 	username: string;
@@ -106,36 +157,6 @@ const ContactCard: Component<{ contact: Contact }> = (props) => {
 };
 
 const ContactInfoComponent: Component = () => {
-	const contacts: Contact[] = [
-		{
-			service: "Discord",
-			username: "rhm176.",
-			icon: "/assets/icons/discord.svg",
-			color: "var(--bright-blue)",
-		},
-		{
-			service: "GitHub",
-			username: "Raik176",
-			url: "https://github.com/Raik176",
-			icon: "/assets/icons/github.svg",
-			color: "var(--bright-white)",
-		},
-		{
-			service: "Email",
-			username: "righthandman176@proton.me",
-			url: "mailto:righthandman176@proton.me",
-			icon: "/assets/icons/email.svg",
-			color: "var(--bright-red)",
-		},
-		{
-			service: "Bluesky",
-			username: "rhm176.de",
-			url: "https://bsky.app/profile/rhm176.de",
-			icon: "/assets/icons/bsky.svg",
-			color: "var(--blue)",
-		},
-	];
-
 	return (
 		<div class="my-2">
 			<p class="text-center mb-2" style={{ color: "var(--text-color)" }}>
@@ -148,13 +169,7 @@ const ContactInfoComponent: Component = () => {
 				(Services are ordered by most frequently used from left to
 				right)
 			</p>
-			<div
-				class="grid gap-4"
-				style={{
-					"grid-template-columns":
-						"repeat(auto-fit, minmax(250px, 1fr))",
-				}}
-			>
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
 				<For each={contacts}>
 					{(contact) => <ContactCard contact={contact} />}
 				</For>

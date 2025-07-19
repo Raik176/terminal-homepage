@@ -33,13 +33,9 @@ export const handler = (
 	terminal: Terminal,
 	args: DeriveArgs<typeof meta.arguments>
 ) => {
-	try {
-		if (args.action === "encode") {
-			terminal.println(btoa(args.string));
-		} else {
-			terminal.println(atob(args.string));
-		}
-	} catch {
-		terminal.error(new Error("Invalid string for the chosen action."));
+	if (args.action === "encode") {
+		terminal.println(btoa(args.string));
+	} else {
+		terminal.println(atob(args.string));
 	}
 };
