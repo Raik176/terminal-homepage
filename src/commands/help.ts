@@ -1,5 +1,5 @@
 import { Terminal } from "../components/Terminal";
-import { DeriveArgs } from "./index";
+import {Commands, DeriveArgs} from "./index";
 
 export const meta = {
 	description: "shows the help menu",
@@ -10,7 +10,7 @@ export const handler = (
 	terminal: Terminal,
 	args: DeriveArgs<typeof meta.arguments>,
 	signal: AbortSignal,
-	allCommands: { [key: string]: any }
+	allCommands: Commands
 ) => {
 	try {
 		const lscmdsDesc = allCommands.lscmds.description;
@@ -21,7 +21,7 @@ export const handler = (
 
     [[cmd:lscmds]] ${lscmdsDesc}
     [[cmd:man]]    ${manDesc}`);
-	} catch (e) {
+	} catch {
 		terminal.error(new Error("Could not load help information."));
 	}
 };

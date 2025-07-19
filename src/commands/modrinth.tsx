@@ -339,9 +339,13 @@ export const handler = async (
 				/>
 			),
 		});
-	} catch (e: any) {
+	} catch (e: unknown) {
 		if (!signal.aborted) {
-			terminal.error(e);
+			if (e instanceof Error) {
+				terminal.error(e);
+			} else {
+				terminal.error(new Error(String(e)));
+			}
 		}
 	}
 };

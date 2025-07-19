@@ -48,6 +48,10 @@ export const handler = async (
 	} else if (res.type === "single") {
 		terminal.println(res.joke);
 	} else {
-		throw new Error(`Unknown joke type received: ${(res as any).type}`);
+		throw new Error(
+			`Unknown joke type received: ${
+				(res as Record<string, unknown>).type
+			}`
+		);
 	}
 };

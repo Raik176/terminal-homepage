@@ -1,6 +1,6 @@
 import { createSignal, Show, Component } from "solid-js";
 import { Terminal } from "../components/Terminal";
-import type { DeriveArgs } from "./index";
+import type {Commands, DeriveArgs} from "./index";
 
 interface CodeBlockProps {
 	codeString: string;
@@ -52,7 +52,7 @@ const CodeBlock: Component<CodeBlockProps> = (props) => {
 							ref={(el) => {
 								if (el) {
 									delete el.dataset.highlighted;
-									(window as any).hljs.highlightElement(el);
+									window.hljs.highlightElement(el);
 								}
 							}}
 						>
@@ -81,8 +81,8 @@ export const meta = {
 export const handler = async (
 	terminal: Terminal,
 	args: DeriveArgs<typeof meta.arguments>,
-	signal: AbortSignal,
-	allCommands: { [key: string]: any }
+	_signal: AbortSignal,
+	allCommands: Commands
 ) => {
 	const commandName = args.command;
 	const commandToDisplay = allCommands[commandName];
@@ -106,10 +106,12 @@ export const handler = async (
 				/>
 			),
 		});
-	} catch (e: any) {
+	} catch (e: unknown) {
 		terminal.error(
 			new Error(
-				`Could not get source for command '${commandName}'. Details: ${e.message}`
+				`Could not get source for command '${commandName}'. Details: ${
+					e instanceof Error ? e.message : String(e)
+				}`
 			)
 		);
 	}

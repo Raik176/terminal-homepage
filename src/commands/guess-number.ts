@@ -15,7 +15,7 @@ export const handler = async (
 	let tries = 0;
 
 	while (true) {
-		let guess = await terminal.promptNumber("guess: ", signal);
+		const guess = await terminal.promptNumber("guess: ", signal);
 		tries++;
 		if (guess === number) {
 			break;

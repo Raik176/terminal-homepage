@@ -4,7 +4,7 @@ import { Footer } from "./components/Footer";
 import { routes } from "./routes";
 import Themes, { defaultTheme } from "./themes";
 
-function Wrapper(Comp: Component<any>, title: string): Component {
+function Wrapper(Comp: Component, title: string): Component {
 	return (props) => {
 		createEffect(() => {
 			document.title = `${title} | RHM`;

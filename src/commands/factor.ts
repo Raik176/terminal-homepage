@@ -19,16 +19,6 @@ export const handler = (
 	terminal: Terminal,
 	args: DeriveArgs<typeof meta.arguments>
 ) => {
-	const isPrime = (i: number) => {
-		if (i <= 1) return false;
-		if (i <= 3) return true;
-		if (i % 2 === 0 || i % 3 === 0) return false;
-		for (let j = 5; j * j <= i; j = j + 6) {
-			if (i % j === 0 || i % (j + 2) === 0) return false;
-		}
-		return true;
-	};
-
 	const primeFactors = (n: number) => {
 		const factors = [];
 		let divisor = 2;

@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import Sitemap from "vite-plugin-sitemap";
 import webfontDownload from "vite-plugin-webfont-dl";
 import { compression } from "vite-plugin-compression2";
-import solidSvg from "vite-plugin-solid-svg";
+import eslint from 'vite-plugin-eslint';
 
 export default defineConfig((configEnv) => ({
 	plugins: [
@@ -22,7 +22,18 @@ export default defineConfig((configEnv) => ({
 			deleteOriginalAssets: false,
 			include: /assets\/.*$/i,
 		}),
-		solidSvg(),
+		{
+			...eslint(),
+			apply: 'build',
+		},
+		{
+			...eslint({
+				failOnWarning: false,
+				failOnError: false,
+			}),
+			apply: 'serve',
+			enforce: 'post'
+		}
 	],
 	server: {
 		port: 3000,

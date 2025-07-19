@@ -39,7 +39,7 @@ export const handler = (
 		} else {
 			terminal.println(atob(args.string));
 		}
-	} catch (e) {
+	} catch {
 		terminal.error(new Error("Invalid string for the chosen action."));
 	}
 };

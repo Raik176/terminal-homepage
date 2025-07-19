@@ -44,39 +44,63 @@ export const argumentTypes = {
 	},
 } as const;
 
-export type DeriveArgs<T> =
-	T extends ReadonlyArray<any>
-		? {
-				[K in T[number] as K["optional"] extends true
-					? K["default"] extends string
-						? K["name"]
-						: never
-					: K["name"]]: K["type"] extends keyof ArgTypeMap
-					? ArgTypeMap[K["type"]]
-					: K["type"] extends { parse: (...args: any[]) => any }
-						? ReturnType<K["type"]["parse"]>
-						: any;
-			} & {
-				[K in T[number] as K["optional"] extends true
-					? K["default"] extends string
-						? never
-						: K["name"]
-					: never]?: K["type"] extends keyof ArgTypeMap
-					? ArgTypeMap[K["type"]]
-					: K["type"] extends { parse: (...args: any[]) => any }
-						? ReturnType<K["type"]["parse"]>
-						: any;
-			}
-		: {};
+export type ArgTypeMap = {
+	[K in keyof typeof argumentTypes]: ReturnType<
+		(typeof argumentTypes)[K]["parse"]
+	>;
+};
+
+// Defines the structure for a single command argument.
+export interface ArgumentDefinition {
+	name: string;
+	shorthand?: string;
+	optional: boolean;
+	description: string;
+	default?: string;
+	type:
+		| keyof ArgTypeMap
+		| {
+		typeName?: string;
+		validate: (value: string) => boolean | Promise<boolean>;
+		parse: (val: string) => unknown;
+		suggestions: (
+			currentInput: string
+		) => string[] | Promise<string[]>;
+	};
+}
+
+export type DeriveArgs<T> = T extends readonly ArgumentDefinition[]
+	? {
+	[K in T[number] as K["optional"] extends true
+		? K["default"] extends string
+			? K["name"]
+			: never
+		: K["name"]]: K["type"] extends keyof ArgTypeMap
+		? ArgTypeMap[K["type"]]
+		: K["type"] extends { parse: (val: string) => unknown }
+			? ReturnType<K["type"]["parse"]>
+			: unknown;
+} & {
+	[K in T[number] as K["optional"] extends true
+		? K["default"] extends string
+			? never
+			: K["name"]
+		: never]?: K["type"] extends keyof ArgTypeMap
+		? ArgTypeMap[K["type"]]
+		: K["type"] extends { parse: (val: string) => unknown }
+			? ReturnType<K["type"]["parse"]>
+			: unknown;
+}
+	: Record<string, never>;
 
 export interface CommandMeta {
 	description: string;
-	arguments?: readonly any[];
+	arguments?: readonly ArgumentDefinition[];
 }
 
 export type CommandHandler = (
 	terminal: Terminal,
-	args: any,
+	args: Record<string, unknown>,
 	signal: AbortSignal,
 	allCommands: Commands
 ) => Promise<void> | void;
@@ -144,9 +168,3 @@ export async function getCommandHandler(
 	}
 	throw new Error(`Command handler not found for ${commandName}`);
 }
-
-export type ArgTypeMap = {
-	[K in keyof typeof argumentTypes]: ReturnType<
-		(typeof argumentTypes)[K]["parse"]
-	>;
-};

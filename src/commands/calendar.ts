@@ -55,7 +55,7 @@ export const handler = (
 	calendar += "Mo Tu We Th Fr Sa Su\n";
 
 	let day = 1;
-	let today = new Date().getDate();
+	const today = new Date().getDate();
 	for (let i = 0; i < 6; i++) {
 		for (let j = 0; j < 7; j++) {
 			if (

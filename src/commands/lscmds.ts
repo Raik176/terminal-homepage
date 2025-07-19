@@ -1,5 +1,5 @@
 import { Terminal } from "../components/Terminal";
-import type { DeriveArgs } from "./index";
+import type {Commands, DeriveArgs} from "./index";
 
 export const meta = {
 	description: "list all available commands",
@@ -8,9 +8,9 @@ export const meta = {
 
 export const handler = (
 	terminal: Terminal,
-	args: DeriveArgs<typeof meta.arguments>,
-	signal: AbortSignal,
-	allCommands: { [key: string]: any }
+	_args: DeriveArgs<typeof meta.arguments>,
+	_signal: AbortSignal,
+	allCommands: Commands
 ) => {
 	const commandList = Object.keys(allCommands);
 	let output = "";

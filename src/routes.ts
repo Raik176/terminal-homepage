@@ -2,7 +2,7 @@ import { Component, lazy } from "solid-js";
 
 interface RouteConfig {
 	path: string;
-	component: Component<any>;
+	component: Component;
 	title: string;
 	hidden?: boolean;
 }

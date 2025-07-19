@@ -14,7 +14,7 @@ import {
 	argumentTypes,
 	commandsPromise,
 	getCommandList,
-	getCommandHandler,
+	getCommandHandler, ArgumentDefinition,
 } from "../commands";
 import { ANSI_COLORS, ArgumentError, getDate, InterruptError } from "../utils";
 import { defaultTheme } from "../themes";
@@ -184,8 +184,8 @@ const TerminalComponent: Component = () => {
 	};
 
 	createEffect(() => {
-		history.length;
-		feedback();
+		void history.length;
+		void feedback();
 
 		if (terminalElement && isAutoScrollActive()) {
 			setTimeout(() => {
@@ -196,8 +196,8 @@ const TerminalComponent: Component = () => {
 
 	const validateAndParseArgument = async (
 		value: string,
-		argDef: any,
-		parsedArgs: Record<string, any>
+		argDef: ArgumentDefinition,
+		parsedArgs: Record<string, unknown>
 	): Promise<string | null> => {
 		const typeDef =
 			typeof argDef.type === "string"
@@ -219,9 +219,9 @@ const TerminalComponent: Component = () => {
 
 	const parseArguments = async (
 		args: string[],
-		argumentDefinitions: readonly any[]
-	): Promise<{ args?: Record<string, any>; error?: string }> => {
-		const parsedArgs: Record<string, any> = {};
+		argumentDefinitions: readonly ArgumentDefinition[]
+	): Promise<{ args?: Record<string, unknown>; error?: string }> => {
+		const parsedArgs: Record<string, unknown> = {};
 		const argsCopy = [...args];
 
 		for (const argDef of argumentDefinitions) {
@@ -337,13 +337,17 @@ const TerminalComponent: Component = () => {
 					const handler = await getCommandHandler(commandName);
 					await handler(terminal, {}, controller.signal, allCommands);
 				}
-			} catch (err: any) {
-				if (err.name === "AbortError") {
+			} catch (err: unknown) {
+				if (err instanceof Error && err.name === "AbortError") {
 					terminal.error(
 						new InterruptError("Command interrupted by user.")
 					);
 				} else {
-					terminal.error(err);
+					if (err instanceof Error) {
+						terminal.error(err);
+					} else {
+						terminal.error(new Error(String(err)));
+					}
 				}
 			} finally {
 				setIsBusy(false);
@@ -714,7 +718,7 @@ const TerminalComponent: Component = () => {
 						terminalElement.querySelectorAll("pre code");
 					codeBlocks.forEach((block) => {
 						if (!block.classList.contains("hljs")) {
-							(window as any).hljs.highlightElement(block);
+							window.hljs.highlightElement(block);
 						}
 					});
 				}

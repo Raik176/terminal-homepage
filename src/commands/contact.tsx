@@ -16,7 +16,7 @@ export const meta = {
 const CopyButton: Component<{ textToCopy: string }> = (props) => {
 	const [copyText, setCopyText] = createSignal("Copy");
 
-	const handleCopy: JSX.EventHandler<HTMLButtonElement, MouseEvent> = (e) => {
+	const handleCopy: JSX.EventHandler<HTMLButtonElement, MouseEvent> = () => {
 		navigator.clipboard.writeText(props.textToCopy).then(() => {
 			setCopyText("Copied!");
 			setTimeout(() => setCopyText("Copy"), 2000);

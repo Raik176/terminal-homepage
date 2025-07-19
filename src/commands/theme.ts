@@ -13,7 +13,7 @@ const hexToRgb = (hex: string) => {
 		: null;
 };
 
-const colorBlock = (hex: any) => {
+const colorBlock = (hex: string) => {
 	if (!hex) return "  ";
 	const rgb = hexToRgb(hex);
 	if (!rgb) return "  ";
@@ -70,8 +70,7 @@ export const handler = (
 			.map((c) => colorBlock(theme[`--bright-${c}`]))
 			.join("");
 
-		let output = `${themeName.padEnd(8)} ${normalColors}  ${brightColors}`;
-		terminal.println(output);
+		terminal.println(`${themeName.padEnd(8)} ${normalColors}  ${brightColors}`);
 	}
 
 	terminal.println(`\nCurrent theme: ${terminal.getTheme()}`);
