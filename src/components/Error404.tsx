@@ -24,7 +24,13 @@ const Error404: Component = () => {
 		>
 			<h1 class="sr-only">Error 404: Page Not Found</h1>
 			<div class="w-full max-w-3xl">
-				<pre aria-hidden="true" style={{ color: "var(--green)" }}>
+				<pre
+					aria-hidden="true"
+					style={{
+						color: "var(--green)",
+						"font-size": "max(0.6vw, 0.35rem)",
+					}}
+				>
 					{`
    _____  _______      _____                            __      _____                        .___
   /  |  | \\   _  \\    /  |  |              ____   _____/  |_  _/ ____\\____  __ __  ____    __| _/

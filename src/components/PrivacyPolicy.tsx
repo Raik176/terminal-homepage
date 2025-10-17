@@ -1,10 +1,9 @@
 import type { Component } from "solid-js";
-import "./PrivacyPolicy.css";
 
 const PrivacyPolicy: Component = () => {
 	return (
 		<main
-			class="font-mono p-4 md:p-8 w-full min-h-screen overflow-y-auto max-h-[100vh] whitespace-pre-wrap flex flex-col items-center"
+			class="font-mono p-4 md:p-8 w-full whitespace-pre-wrap flex flex-col items-center"
 			style={{
 				"background-color": "var(--background)",
 				color: "var(--text-color)",
@@ -17,7 +16,9 @@ const PrivacyPolicy: Component = () => {
 				<pre
 					aria-hidden="true"
 					class="text-sm md:text-base"
-					style={{ color: "var(--green)" }}
+					style={{
+						color: "var(--green)",
+					}}
 				>
 					{`
  _______           _                                    _______         __    _                   

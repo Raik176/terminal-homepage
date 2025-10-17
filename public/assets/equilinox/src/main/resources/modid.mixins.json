@@ -1,0 +1,9 @@
+{
+	"required": true,
+	"package": "{{MOD_PACKAGE_NAME}}.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": ["GameManagerMixin"],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

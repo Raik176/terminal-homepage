@@ -7,30 +7,40 @@ interface RouteConfig {
 	hidden?: boolean;
 }
 
-const Error404 = lazy(() => import("./components/Error404"));
-const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy"));
-const Disclaimer = lazy(() => import("./components/Disclaimer"));
-const Terminal = lazy(() => import("./components/Terminal"));
-
 export const routes: RouteConfig[] = [
 	{
 		path: "/",
-		component: Terminal,
+		component: lazy(() => import("./components/Terminal")),
 		title: "Home",
 	},
 	{
 		path: "/legal/privacy-policy",
-		component: PrivacyPolicy,
+		component: lazy(() => import("./components/PrivacyPolicy")),
 		title: "Privacy Policy",
 	},
 	{
 		path: "/legal/disclaimer",
-		component: Disclaimer,
+		component: lazy(() => import("./components/Disclaimer")),
 		title: "Disclaimer",
 	},
 	{
+		path: "/minecraft",
+		component: lazy(() => import("./components/Minecraft")),
+		title: "Minecraft",
+	},
+	{
+		path: "/equilinox",
+		component: lazy(() => import("./components/Equilinox")),
+		title: "Equilinox",
+	},
+	{
+		path: "/portfolio",
+		component: lazy(() => import("./components/Portfolio")),
+		title: "Portfolio",
+	},
+	{
 		path: "/*",
-		component: Error404,
+		component: lazy(() => import("./components/Error404")),
 		title: "404",
 		hidden: true,
 	},

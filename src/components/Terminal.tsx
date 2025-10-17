@@ -19,6 +19,7 @@ import {
 } from "../commands";
 import { ANSI_COLORS, ArgumentError, getDate, InterruptError } from "../utils";
 import { defaultTheme } from "../themes";
+import { configManager } from "../config";
 
 type OutputItem = string | { html: JSX.Element } | (() => JSX.Element);
 
@@ -214,6 +215,7 @@ const TerminalComponent: Component = () => {
 			return `Invalid value for '${argDef.name}': expected ${typeName}, got '${value}'.`;
 		}
 
+		// @ts-ignore
 		parsedArgs[argDef.name] = typeDef.parse(value);
 		return null;
 	};
@@ -282,6 +284,7 @@ const TerminalComponent: Component = () => {
 									argDef.type as keyof typeof argumentTypes
 								]
 							: argDef.type;
+					// @ts-ignore
 					parsedArgs[argDef.name] = typeDef.parse(argDef.default);
 				} else if (!argDef.optional) {
 					return {
@@ -561,13 +564,7 @@ const TerminalComponent: Component = () => {
 			}
 		});
 
-		if (!localStorage.hasOwnProperty("start-commands")) {
-			localStorage.setItem("start-commands", "helloworld");
-		}
-		const startupCommands = localStorage
-			.getItem("start-commands")!
-			.split(",")
-			.filter((c) => c);
+		const startupCommands = configManager.get("start-commands");
 		for (const cmd of startupCommands) {
 			await handleCommand(cmd, false);
 		}
@@ -784,7 +781,7 @@ const TerminalComponent: Component = () => {
 	return (
 		<div
 			ref={(el) => (terminalWrapperDiv = el)}
-			class="h-screen flex flex-col pb-10"
+			class="w-full flex flex-col"
 			aria-live="polite"
 			aria-atomic="false"
 			style={{
@@ -794,81 +791,76 @@ const TerminalComponent: Component = () => {
 			onKeyDown={handleKeyDown}
 			tabindex="0"
 		>
-			<div class="flex-grow overflow-auto">
-				<div
-					ref={(el) => (terminalElement = el)}
-					onScroll={handleScroll}
-					aria-live="polite"
-					aria-atomic="false"
-					class="font-mono p-4 w-full h-full overflow-y-auto whitespace-pre-wrap"
-					style={{
-						"font-family": "'Fira Code', monospace",
-						"max-height": "calc(100vh - 44px)",
-						"background-color": "var(--background)",
-					}}
-				>
-					<div role="log" aria-live="polite">
-						<For each={history}>
-							{(item) => <div>{renderOutput(item)}</div>}
-						</For>
-					</div>
-					{(!isBusy() || terminal.isPromptActive()) && (
-						<>
-							<div class="flex items-center w-full">
-								<span style={{ "white-space": "pre" }}>
-									<For each={parseAnsi(terminal.getPrompt())}>
-										{(segment) => (
-											<span style={segment.style}>
-												{segment.text}
-											</span>
-										)}
-									</For>
-								</span>
-								<div class="flex-grow relative">
-									<label for="prompt" class="sr-only">
-										Terminal Input
-									</label>
-									<input
-										ref={(el) => (inputElement = el)}
-										type="text"
-										value={input()}
-										onInput={(e) =>
-											setInput(e.currentTarget.value)
-										}
-										class="bg-transparent outline-none border-none w-full"
-										autofocus
-										autocomplete="off"
-										aria-label="Terminal Input"
-										id="prompt"
-									/>
-									{suggestion() && (
-										<span
-											class="absolute left-0 top-0 text-gray-500 pointer-events-none"
-											style={{
-												"padding-left": `${input().length}ch`,
-											}}
-										>
-											{suggestion().substring(
-												input().length
-											)}
+			<div
+				ref={(el) => (terminalElement = el)}
+				onScroll={handleScroll}
+				aria-live="polite"
+				aria-atomic="false"
+				class="font-mono p-4 w-full whitespace-pre-wrap flex-grow overflow-y-auto"
+				style={{
+					"font-family": "'Fira Code', monospace",
+					"background-color": "var(--background)",
+				}}
+			>
+				<div role="log" aria-live="polite">
+					<For each={history}>
+						{(item) => <div>{renderOutput(item)}</div>}
+					</For>
+				</div>
+				{(!isBusy() || terminal.isPromptActive()) && (
+					<>
+						<div class="flex items-center w-full">
+							<span style={{ "white-space": "pre" }}>
+								<For each={parseAnsi(terminal.getPrompt())}>
+									{(segment) => (
+										<span style={segment.style}>
+											{segment.text}
 										</span>
 									)}
-								</div>
+								</For>
+							</span>
+							<div class="flex-grow relative">
+								<label for="prompt" class="sr-only">
+									Terminal Input
+								</label>
+								<input
+									ref={(el) => (inputElement = el)}
+									type="text"
+									value={input()}
+									onInput={(e) =>
+										setInput(e.currentTarget.value)
+									}
+									class="bg-transparent outline-none border-none w-full"
+									autofocus
+									autocomplete="off"
+									aria-label="Terminal Input"
+									id="prompt"
+								/>
+								{suggestion() && (
+									<span
+										class="absolute left-0 top-0 text-gray-500 pointer-events-none"
+										style={{
+											"padding-left": `${input().length}ch`,
+										}}
+									>
+										{suggestion().substring(input().length)}
+									</span>
+								)}
 							</div>
-							{feedback() && (
-								<div class="text-gray-500 whitespace-pre">
-									<For each={parseAnsi(feedback())}>
-										{(segment) => (
-											<span style={segment.style}>
-												{segment.text}
-											</span>
-										)}
-									</For>
-								</div>
-							)}
-						</>
-					)}
-				</div>
+						</div>
+						{feedback() && (
+							<div class="text-gray-500 whitespace-pre">
+								<For each={parseAnsi(feedback())}>
+									{(segment) => (
+										<span style={segment.style}>
+											{segment.text}
+										</span>
+									)}
+								</For>
+							</div>
+						)}
+					</>
+				)}
 			</div>
 		</div>
 	);

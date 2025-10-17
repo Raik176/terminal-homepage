@@ -17,9 +17,8 @@ function Wrapper(Comp: Component, title: string): Component {
 		});
 
 		return (
-			<div>
+			<div class="flex-grow flex">
 				<Comp {...props} />
-				<Footer />
 			</div>
 		);
 	};
@@ -56,16 +55,19 @@ const App: Component = () => {
 	});
 
 	return (
-		<Router>
-			<For each={routes}>
-				{(route) => (
-					<Route
-						path={route.path}
-						component={Wrapper(route.component, route.title)}
-					/>
-				)}
-			</For>
-		</Router>
+		<div class="flex flex-col min-h-screen">
+			<Router>
+				<For each={routes}>
+					{(route) => (
+						<Route
+							path={route.path}
+							component={Wrapper(route.component, route.title)}
+						/>
+					)}
+				</For>
+			</Router>
+			<Footer />
+		</div>
 	);
 };
 

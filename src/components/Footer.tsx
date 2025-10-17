@@ -5,39 +5,34 @@ export const Footer: Component = () => {
 	const filteredRoutes = routes.filter((route) => !route.hidden);
 
 	return (
-		<footer class="bg-gray-950 w-full fixed bottom-0 p-1">
+		<footer
+			class="bg-gray-950 w-full p-1"
+			style={{ "font-family": "'Oswald', sans-serif" }}
+		>
 			<div class="p-1">
-				<p
-					class="text-white inline"
-					style={{
-						"font-family": "'Oswald', sans-serif",
-						"font-optical-sizing": "auto",
-						"font-weight": "350",
-						"font-style": "normal",
-					}}
-				>
+				<p class="text-white inline">
 					&copy; {new Date().getFullYear()} Right Hand Man.
 				</p>
-
-				<For each={filteredRoutes}>
-					{(route) => (
-						<>
-							<span class="text-gray-400 mx-2">|</span>
-							<a
-								href={route.path}
-								class="text-gray-400 hover:text-white text-sm"
-								style={{
-									"font-family": "'Oswald', sans-serif",
-									"font-optical-sizing": "auto",
-									"font-weight": "350",
-									"font-style": "normal",
-								}}
-							>
-								{route.title}
-							</a>
-						</>
-					)}
-				</For>
+				<nav aria-label="Footer navigation" class="inline">
+					<For each={filteredRoutes}>
+						{(route) => (
+							<>
+								<span
+									aria-hidden="true"
+									class="text-gray-400 mx-2"
+								>
+									|
+								</span>
+								<a
+									href={route.path}
+									class="text-gray-400 hover:text-white text-sm"
+								>
+									{route.title}
+								</a>
+							</>
+						)}
+					</For>
+				</nav>
 			</div>
 		</footer>
 	);

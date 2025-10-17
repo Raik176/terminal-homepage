@@ -1,4 +1,4 @@
-import { getDate } from "../utils";
+import { ANSI_COLORS, getDate } from "../utils";
 import { Terminal } from "../components/Terminal";
 
 function generateRandomIPv4() {
@@ -18,7 +18,9 @@ function getMotd() {
    IPv4 address for eno1: ${generateRandomIPv4()}
   
 Last login: ${localStorage.getItem("lastLogin") || "Never"}
-For a list of available commands, type "[[cmd:help]]".`;
+For a list of available commands, type "[[cmd:help]]".
+
+${ANSI_COLORS.YELLOW}For ways to support my work, type "[[cmd:support]]".${ANSI_COLORS.RESET}`;
 }
 
 export const meta = {

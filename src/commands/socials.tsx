@@ -1,68 +1,17 @@
-import { createSignal, For, Show, Component, JSX } from "solid-js";
+import {
+	createSignal,
+	For,
+	Show,
+	Component,
+	JSX,
+	createEffect,
+	onCleanup,
+} from "solid-js";
 import { Terminal } from "../components/Terminal";
+import { Contact, SOCIALS } from "../utils";
 
-const contacts: Contact[] = [
-	{
-		service: "Discord",
-		username: "rhm176.",
-		icon: "/assets/icons/discord.svg",
-		color: "var(--bright-blue)",
-	},
-	{
-		service: "Steam",
-		username: "raik176",
-		url: "https://steamcommunity.com/profiles/76561198807024982/",
-		icon: "/assets/icons/steam.svg",
-		color: "#66c0f4",
-	},
-	{
-		service: "GitHub",
-		username: "Raik176",
-		url: "https://github.com/Raik176",
-		icon: "/assets/icons/github.svg",
-		color: "var(--bright-white)",
-	},
-	{
-		service: "Email",
-		username: "righthandman176@proton.me",
-		url: "mailto:righthandman176@proton.me",
-		icon: "/assets/icons/email.svg",
-		color: "var(--bright-red)",
-	},
-	{
-		service: "Modrinth",
-		username: "rhm176.",
-		url: "https://modrinth.com/user/rhm176.",
-		icon: "/assets/icons/modrinth.svg",
-		color: "var(--green)",
-	},
-	{
-		service: "Curseforge",
-		username: "rhm176",
-		url: "https://www.curseforge.com/members/rhm176",
-		icon: "/assets/icons/curseforge.svg",
-		color: "#ffa500",
-	},
-	{
-		service: "Bluesky",
-		username: "rhm176.de",
-		url: "https://bsky.app/profile/rhm176.de",
-		icon: "/assets/icons/bsky.svg",
-		color: "var(--blue)",
-	},
-];
-
-interface Contact {
-	service: string;
-	username: string;
-	icon: string;
-	color: string;
-	url?: string;
-}
-
-export const meta = {
-	description: "displays my contact information",
-} as const;
+const usernameCache = new Map<Contact, Promise<string> | string>();
+let activeDynamicCards = 0;
 
 const CopyButton: Component<{ textToCopy: string }> = (props) => {
 	const [copyText, setCopyText] = createSignal("Copy");
@@ -89,6 +38,45 @@ const CopyButton: Component<{ textToCopy: string }> = (props) => {
 };
 
 const ContactCard: Component<{ contact: Contact }> = (props) => {
+	const [username, setUsername] = createSignal<string | null>(null);
+
+	createEffect(() => {
+		const { username: user } = props.contact;
+
+		if (typeof user === "function") {
+			if (!usernameCache.has(props.contact)) {
+				const promise = user()
+					.then((name) => {
+						usernameCache.set(props.contact, name);
+						return name;
+					})
+					.catch(() => {
+						usernameCache.set(props.contact, "N/A");
+						return "N/A";
+					});
+				usernameCache.set(props.contact, promise);
+			}
+
+			activeDynamicCards++;
+
+			const cached = usernameCache.get(props.contact)!;
+			if (typeof cached === "string") {
+				setUsername(cached);
+			} else {
+				cached.then(setUsername);
+			}
+
+			onCleanup(() => {
+				activeDynamicCards--;
+				if (activeDynamicCards === 0) {
+					usernameCache.clear();
+				}
+			});
+		} else {
+			setUsername(user);
+		}
+	});
+
 	const CardContent: Component = () => (
 		<>
 			<div
@@ -109,7 +97,9 @@ const ContactCard: Component<{ contact: Contact }> = (props) => {
 					{props.contact.service}
 				</h3>
 				<p class="text-sm" style={{ color: "var(--text-color)" }}>
-					{props.contact.username}
+					<Show fallback="Loading..." when={username()}>
+						{username()}
+					</Show>
 				</p>
 			</div>
 		</>
@@ -150,7 +140,9 @@ const ContactCard: Component<{ contact: Contact }> = (props) => {
 			</Show>
 
 			<div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-				<CopyButton textToCopy={props.contact.username} />
+				<Show when={username()}>
+					{(name) => <CopyButton textToCopy={name()} />}
+				</Show>
 			</div>
 		</div>
 	);
@@ -170,13 +162,17 @@ const ContactInfoComponent: Component = () => {
 				right)
 			</p>
 			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-				<For each={contacts}>
+				<For each={SOCIALS}>
 					{(contact) => <ContactCard contact={contact} />}
 				</For>
 			</div>
 		</div>
 	);
 };
+
+export const meta = {
+	description: "displays my socials",
+} as const;
 
 export const handler = (terminal: Terminal) => {
 	terminal.println(() => <ContactInfoComponent />);

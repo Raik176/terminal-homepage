@@ -143,3 +143,87 @@ export const ANSI_COLORS = {
 	BG_BRIGHT_WHITE: "\x1b[107m",
 	FG_BLACK_BG_WHITE: "\x1b[30;47m",
 } as const;
+
+export interface Contact {
+	service: string;
+	username: string | (() => Promise<string>);
+	icon: string;
+	color: string;
+	url?: string;
+}
+
+export const DISCORD_ID = "1186409886129594428";
+export const MODRINTH_USER = "rhm176.";
+export const GITHUB_USER = "Raik176";
+
+export const SOCIALS: Contact[] = [
+	{
+		service: "Discord",
+		username: async () => {
+			const response = await fetch(
+				`https://api.lanyard.rest/v1/users/${DISCORD_ID}`
+			);
+			if (!response.ok) {
+				console.error(
+					"Failed to fetch username:",
+					new Error(`HTTP error! status: ${response.status}`)
+				);
+				return "N/A";
+			}
+			const data = await response.json();
+			return data?.data?.discord_user?.username || "N/A";
+		},
+		url: `https://discord.com/users/${DISCORD_ID}`,
+		icon: "/assets/icons/socials/discord.svg",
+		color: "var(--bright-blue)",
+	},
+	{
+		service: "Discord Server",
+		username: "RHM's Lab",
+		url: "https://discord.gg/FpEReTJbSA",
+		icon: "/assets/icons/socials/discord.svg",
+		color: "var(--bright-blue)",
+	},
+	{
+		service: "Steam",
+		username: "raik176",
+		url: "https://steamcommunity.com/profiles/76561198807024982/",
+		icon: "/assets/icons/socials/steam.svg",
+		color: "#66c0f4",
+	},
+	{
+		service: "GitHub",
+		username: GITHUB_USER,
+		url: `https://github.com/${GITHUB_USER}`,
+		icon: "/assets/icons/socials/github.svg",
+		color: "var(--bright-white)",
+	},
+	{
+		service: "Email",
+		username: "righthandman176@proton.me",
+		url: "mailto:righthandman176@proton.me",
+		icon: "/assets/icons/socials/email.svg",
+		color: "var(--bright-red)",
+	},
+	{
+		service: "Modrinth",
+		username: MODRINTH_USER,
+		url: `https://modrinth.com/user/${MODRINTH_USER}`,
+		icon: "/assets/icons/socials/modrinth.svg",
+		color: "var(--green)",
+	},
+	{
+		service: "Curseforge",
+		username: "rhm176",
+		url: "https://www.curseforge.com/members/rhm176",
+		icon: "/assets/icons/socials/curseforge.svg",
+		color: "#ffa500",
+	},
+	{
+		service: "Bluesky",
+		username: "rhm176.de",
+		url: "https://bsky.app/profile/rhm176.de",
+		icon: "/assets/icons/socials/bsky.svg",
+		color: "var(--blue)",
+	},
+] as const;

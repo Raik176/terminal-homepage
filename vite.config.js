@@ -18,6 +18,7 @@ export default defineConfig(() => ({
 			generateRobotsTxt: true,
 		}),
 		webfontDownload(),
+		ViteImageOptimizer({}),
 		compression({
 			threshold: 2048,
 			algorithms: ["brotliCompress"],
@@ -25,7 +26,6 @@ export default defineConfig(() => ({
 			include: /.*$/i,
 		}),
 		eslintPlugin(),
-		ViteImageOptimizer({}),
 	],
 	server: {
 		port: 3000,
