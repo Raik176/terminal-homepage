@@ -76,6 +76,20 @@ const parseLinkHeader = (header: string | null): { [key: string]: string } => {
 	);
 };
 
+function getAge(birthDate: string | Date) {
+	const today = new Date();
+	const birth = new Date(birthDate);
+	let age = today.getFullYear() - birth.getFullYear();
+
+	const monthDiff = today.getMonth() - birth.getMonth();
+	const dayDiff = today.getDate() - birth.getDate();
+	if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+		age--;
+	}
+
+	return age;
+}
+
 const fetchAndMergeProjects = async (): Promise<Project[]> => {
 	const [githubData, modrinthData] = await Promise.all([
 		fetchGithubRepos(),
@@ -329,7 +343,6 @@ const ProjectCard: Component<{ project: Project }> = (props) => (
 	</div>
 );
 
-// --- PORTFOLIO COMPONENT ---
 const Portfolio: Component = () => {
 	const [projects] = createResource<Project[]>(fetchAndMergeProjects);
 
@@ -381,9 +394,9 @@ const Portfolio: Component = () => {
 							My Portfolio
 						</h1>
 						<p class="text-[var(--bright-black)] text-lg">
-							Hello! I'm Raik, a 17 year old from Germany. I'm
-							currently studying to be an IT assistant at a
-							vocational school.
+							Hello! I'm Raik, a {getAge("2008-08-29")} year old
+							from Germany. I'm currently studying to be an IT
+							assistant at a vocational school.
 						</p>
 					</header>
 
