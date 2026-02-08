@@ -76,11 +76,9 @@ interface GradleVersion {
 	downloadUrl: string;
 }
 
-const PROXY_URL = "https://corsproxy.io/?";
-
 const fetchResource = async (url: string) => {
 	try {
-		const res = await fetch(`${PROXY_URL}${encodeURIComponent(url)}`);
+		const res = await fetch(url);
 		return res.ok ? await res.text() : null;
 	} catch (e) {
 		console.error(`Failed to fetch from ${url}`, e);
